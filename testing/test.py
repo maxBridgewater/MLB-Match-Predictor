@@ -46,7 +46,7 @@ def make_training_data(N, num_points):
 if __name__=="__main__":
 
     #Make random polynomial data
-    X, y = make_training_data(10000, 10)
+    X, y = make_training_data(1000, 25)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     #Deine model
@@ -61,11 +61,11 @@ if __name__=="__main__":
     print('Mean MAE: %.3f (%.3f)' % (scores.mean(), scores.std()) )
 
     #predict
-    y_predicted = model.predict(X_test)
+    #y_predicted = model.predict(X_test)
 
-    mae_test = np.sum((y_predicted - y_test)**2) * (1 / y_test.shape[0])
+    #mae_test = np.sum((y_predicted - y_test)**2) * (1 / y_test.shape[0])
 
-    print(f'MAE Between predicted y and test y is {mae_test}')
+    #print(f'MAE Between predicted y and test y is {mae_test}')
 
 
 
