@@ -13,13 +13,13 @@ from data_loading.data_cleaner import get_cleaned_data
 
 def objective(space):
     model=xg.XGBClassifier(
-                    n_estimators =space['n_estimators'], max_depth = int(space['max_depth']), gamma = space['gamma'],
+                    n_estimators =int(space['n_estimators']), max_depth = int(space['max_depth']), gamma = space['gamma'],
                     reg_alpha = int(space['reg_alpha']),min_child_weight=int(space['min_child_weight']),
-                    colsample_bytree=int(space['colsample_bytree']))
+                    colsample_bytree=int(space['colsample_bytree']), learning_rate = space['learning_rate'])
     
     evaluation = [( X_train, y_train), ( X_test, y_test)]
     
-    model.set_params(eval_metric=["error", "auc"], early_stopping_rounds=10)
+    model.set_params(eval_metric=["error", "rmse"], early_stopping_rounds=10)
     model.fit(X_train, y_train, eval_set=evaluation,verbose=False)
     
 
@@ -42,13 +42,14 @@ if __name__=="__main__":
 
 
     #Test hyperparam optimization
-    space={'max_depth': hp.quniform("max_depth", 3, 18, 1),
+    space={'max_depth': hp.quniform("max_depth", 3, 20, 1),
         'gamma': hp.uniform ('gamma', 1,9),
-        'reg_alpha' : hp.quniform('reg_alpha', 40,180,1),
+        'reg_alpha' : hp.quniform('reg_alpha', 30,180,1),
         'reg_lambda' : hp.uniform('reg_lambda', 0,1),
         'colsample_bytree' : hp.uniform('colsample_bytree', 0.5,1),
         'min_child_weight' : hp.quniform('min_child_weight', 0, 10, 1),
-        'n_estimators': 180,
+        'n_estimators': hp.quniform('n_estimators', 100, 200, 1),
+        'learning_rate': hp.uniform('learning_rate', 0.1, 0.2),
         'seed': 0
     }
 
@@ -74,6 +75,10 @@ if __name__=="__main__":
     model.set_params(eval_metric=["error", "logloss", "rmse"],)
     model.fit(X_train, y_train, eval_set=eval_set, verbose=True)
 
+    #Plot feature importance
+    xg.plot_importance(model)
+
+
     results = model.evals_result()
     epochs = len(results['validation_0']['error'])
 
@@ -98,6 +103,10 @@ if __name__=="__main__":
     ax.legend()
     plt.ylabel('RMSE')
     plt.title('XGBoost RMSE')
+
+    #Now try cross validation
+
+    
 
 
     plt.show()
