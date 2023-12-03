@@ -26,10 +26,9 @@ def get_cleaned_data(filepath_data, filepath_teams):
 
     df['date'] = pd.to_datetime(df['date'])
 
-    #Convert the date time column into days elapsed since Jan 1st 2022
-    start_date = pd.to_datetime('2022-01-01')
+    #Convert the date time column into days elapsed since Jan 1st 2022 or Jan 1st 2023
 
-    df['days_elapsed'] = (df['date'] - start_date).dt.days
+    df['days_elapsed'] = (df['date'].dt.dayofyear - 1)
 
     df.drop('date', axis=1, inplace=True)
 

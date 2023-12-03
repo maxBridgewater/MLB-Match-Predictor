@@ -1,6 +1,6 @@
 import xgboost as xg
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, mean_squared_error
 #from sklearn.model_selection import cross_val_score
 #from sklearn.model_selection import RepeatedKFold
 import numpy as np
@@ -12,7 +12,7 @@ from data_loading.data_cleaner import get_cleaned_data
 
 
 def objective(space):
-    model=xg.XGBClassifier(
+    model=xg.XGBRegressor(
                     n_estimators =int(space['n_estimators']), max_depth = int(space['max_depth']), gamma = space['gamma'],
                     reg_alpha = int(space['reg_alpha']),min_child_weight=int(space['min_child_weight']),
                     colsample_bytree=int(space['colsample_bytree']), learning_rate = space['learning_rate'])
@@ -24,9 +24,9 @@ def objective(space):
     
 
     y_predicted = model.predict(X_test)
-    acc = accuracy_score(y_test, y_predicted>0.5)
-    print ("score:", acc)
-    return {'loss': -acc, 'status': STATUS_OK }
+    rmse = mean_squared_error(y_test, y_predicted, squared=False)
+    print ("score:", rmse)
+    return {'loss': rmse, 'status': STATUS_OK }
 
 
 if __name__=="__main__":
@@ -34,12 +34,16 @@ if __name__=="__main__":
     #Load the cleaned data
     df = get_cleaned_data('./data_loading/data.csv', './data_loading/teams.txt')
 
+    print(df['earnedruns_home'])
+
     #Create the data matrix and target vector
-    X = df.drop(columns=['target'])
-    y = df['target']
+    X = df.drop(columns=['target', 'runs_home', 'runs_away'])
+    y = df[['runs_home', 'runs_away']]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+    print(X_train)
+    print(y_train)
 
     #Test hyperparam optimization
     space={'max_depth': hp.quniform("max_depth", 3, 20, 1),
@@ -67,8 +71,8 @@ if __name__=="__main__":
     #Define evaluation set
     eval_set = [(X_train, y_train), (X_test, y_test)]
 
-    #Deine model
-    model = xg.XGBClassifier(n_estimators=int(best_hyperparams['n_estimators']), max_depth = int(best_hyperparams['max_depth']), gamma = best_hyperparams['gamma'],
+    #Define model
+    model = xg.XGBRegressor(n_estimators=int(best_hyperparams['n_estimators']), max_depth = int(best_hyperparams['max_depth']), gamma = best_hyperparams['gamma'],
                     reg_alpha = int(best_hyperparams['reg_alpha']),min_child_weight=int(best_hyperparams['min_child_weight']),
                     colsample_bytree=int(best_hyperparams['colsample_bytree']))
     
@@ -85,8 +89,8 @@ if __name__=="__main__":
 
     y_predicted = model.predict(X_test)
 
-    accuracy = accuracy_score(y_test, y_predicted>0.5)
-    print(f'Accuracy Between predicted y and test y is {accuracy}')
+    rmse = mean_squared_error(y_test, y_predicted, squared=False)
+    print(f'RMSE Between predicted y and test y is {rmse}')
 
     x_axis = range(0, epochs)
     # plot log loss
