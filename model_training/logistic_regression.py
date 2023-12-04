@@ -25,12 +25,16 @@ if __name__=="__main__":
     print(X_train)
 
     model = LogisticRegression(max_iter = 1000)
-    #model.set_params(eval_metric=["error", "logloss", "rmse"],)
 
     model.fit(X_train, y_train)
 
-    #results = model.evals_result()
-    #epochs = len(results['validation_0']['error'])
+    #Plot feature importance
+    coefs = model.coef_[0]
+    feature_importance = pd.DataFrame({'Feature': X.columns, 'Importance': np.abs(coefs)})
+    feature_importance = feature_importance.sort_values('Importance', ascending=True)
+    feature_importance.plot(x='Feature', y='Importance', kind='barh', figsize=(10, 6))  
+    plt.xlabel('Relative Importance')
+    plt.title('Logistic Regression Feature Importance')
 
 
     y_predicted = model.predict(X_test)
@@ -38,23 +42,6 @@ if __name__=="__main__":
     accuracy = accuracy_score(y_test, y_predicted>0.5)
     print(f'Accuracy Between predicted y and test y is {accuracy}')
 
-    '''
-    x_axis = range(0, epochs)
-    # plot log loss
-    fig, ax = plt.subplots()
-    ax.plot(x_axis, results['validation_0']['logloss'], label='Train')
-    ax.plot(x_axis, results['validation_1']['logloss'], label='Test')
-    ax.legend()
-    plt.ylabel('Log Loss')
-    plt.title('XGBoost Log Loss')
-
-    fig, ax = plt.subplots()
-    ax.plot(x_axis, results['validation_0']['rmse'], label='Train')
-    ax.plot(x_axis, results['validation_1']['rmse'], label='Test')
-    ax.legend()
-    plt.ylabel('RMSE')
-    plt.title('XGBoost RMSE')
-    '''
     plt.show()
 
 
