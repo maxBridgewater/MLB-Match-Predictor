@@ -1,8 +1,6 @@
 import xgboost as xg
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-#from sklearn.model_selection import cross_val_score
-#from sklearn.model_selection import RepeatedKFold
 import numpy as np
 import matplotlib.pyplot as plt
 from hyperopt import STATUS_OK, Trials, fmin, hp, tpe
@@ -41,14 +39,14 @@ if __name__=="__main__":
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 
-    #Test hyperparam optimization
+    #hyperparameter optimization
     space={'max_depth': hp.quniform("max_depth", 3, 20, 1),
         'gamma': hp.uniform ('gamma', 1,9),
         'reg_alpha' : hp.quniform('reg_alpha', 30,180,1),
         'reg_lambda' : hp.uniform('reg_lambda', 0,1),
         'colsample_bytree' : hp.uniform('colsample_bytree', 0.5,1),
         'min_child_weight' : hp.quniform('min_child_weight', 0, 10, 1),
-        'n_estimators': hp.quniform('n_estimators', 100, 200, 1),
+        'n_estimators' : hp.uniform('n_estimators', 180, 200),
         'learning_rate': hp.uniform('learning_rate', 0.1, 0.2),
         'seed': 0
     }

@@ -32,13 +32,14 @@ def objective(space):
 if __name__=="__main__":
 
     #Load the cleaned data
-    df = get_cleaned_data('./data_loading/data.csv', './data_loading/teams.txt')
+    df = get_cleaned_data('./data_loading/data_full.csv', './data_loading/teams.txt', date=False)
+    df_date_only = get_cleaned_data('./data_loading/data.csv', './data_loading/teams.txt')['days_elapsed']
 
-    print(df['earnedruns_home'])
+    df['days_elapsed'] = df_date_only
 
     #Create the data matrix and target vector
-    X = df.drop(columns=['target', 'runs_home', 'runs_away'])
-    y = df[['runs_home', 'runs_away']]
+    X = df.drop(columns=['target', 'result_run_home', 'reuslt_run_away'])
+    y = df[['result_run_home', 'reuslt_run_away']]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
