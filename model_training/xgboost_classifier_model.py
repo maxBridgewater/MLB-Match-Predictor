@@ -87,23 +87,14 @@ if __name__=="__main__":
     print(f'Accuracy Between predicted y and test y is {accuracy}')
 
     x_axis = range(0, epochs)
-    # plot log loss
-    fig, ax = plt.subplots()
-    ax.plot(x_axis, results['validation_0']['logloss'], label='Train')
-    ax.plot(x_axis, results['validation_1']['logloss'], label='Test')
-    ax.legend()
-    plt.ylabel('Log Loss')
-    plt.title('XGBoost Log Loss')
 
     fig, ax = plt.subplots()
-    ax.plot(x_axis, results['validation_0']['rmse'], label='Train')
-    ax.plot(x_axis, results['validation_1']['rmse'], label='Test')
+    ax.plot(x_axis, results['validation_0']['rmse'], label='Test')
+    ax.plot(x_axis, results['validation_1']['rmse'], label='Evaluation')
     ax.legend()
     plt.ylabel('RMSE')
+    plt.xlabel('Epoch')
     plt.title('XGBoost RMSE')
-
-    #Now try cross validation
-
     
 
 

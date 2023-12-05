@@ -1,6 +1,6 @@
-import xgboost as xg
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, make_scorer
+from sklearn.model_selection import learning_curve
 from sklearn.linear_model import LogisticRegression
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,8 +23,31 @@ if __name__=="__main__":
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     print(X_train)
+    
+    #Define model
+    model = LogisticRegression(max_iter = 10000)
 
-    model = LogisticRegression(max_iter = 1000)
+    #Create scorer
+    scorer = make_scorer(accuracy_score)
+
+    train_sizes, train_scores, test_scores = learning_curve(
+    model, X_train, y_train, cv=5, scoring=scorer, n_jobs=-1)
+
+    # Calculate mean and standard deviation of training set scores
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+
+    # Calculate mean and standard deviation of test set scores
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
+
+    plt.figure(figsize=(10, 6))
+    plt.title("Learning Curve")
+    plt.xlabel("Training examples")
+    plt.ylabel("Accuracy")
+    plt.plot(train_sizes, train_scores_mean, "o-", color="r", label="Train")
+    plt.plot(train_sizes, test_scores_mean, "o-", color="g", label="Evaluation")
+    plt.legend(loc="best")
 
     model.fit(X_train, y_train)
 
